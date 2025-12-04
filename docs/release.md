@@ -13,8 +13,7 @@ To streamline the release process:
 
 1.  **Update Version**: Run the `set-version` script to update the version in `package.json` files. The `workspace-server` will now dynamically read its version from its `package.json`.
     ```bash
-    npm run set-version <new-version>
-# Example: npm run set-version 0.0.4
+    npm run set-version <new-version> #0.0.x for example
     ```
 
 2.  **Commit Changes**: Commit the version bump and push the changes to `main` (either directly or via a PR).
@@ -27,7 +26,7 @@ To streamline the release process:
 
     ```bash
     # Syntax: gh release create <tag> --generate-notes
-gh release create v<new-version> --generate-notes
+    gh release create v<new-version> --generate-notes
     ```
 
 ### What happens next?
