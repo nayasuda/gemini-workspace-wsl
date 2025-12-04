@@ -24,30 +24,6 @@ const updateJsonFile = (filePath, version) => {
   }
 };
 
-const updateTsFile = (filePath, version) => {
-  try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    // Regex to find version: "x.y.z" and replace it
-    // Matches version: "..." or version: '...'
-    const regex = /(version:\s*["'])[^"']*(["'])/;
-    
-    if (regex.test(content)) {
-      const newContent = content.replace(regex, `$1${version}$2`);
-      if (content !== newContent) {
-        fs.writeFileSync(filePath, newContent);
-        console.log(`Updated ${path.relative(rootDir, filePath)} to version ${version}`);
-      } else {
-        console.log(`Version in ${path.relative(rootDir, filePath)} is already ${version}`);
-      }
-    } else {
-      console.error(`Could not find version string in ${path.relative(rootDir, filePath)}`);
-      process.exit(1);
-    }
-  } catch (error) {
-    console.error(`Failed to update TS file at ${path.relative(rootDir, filePath)}:`, error);
-    process.exit(1);
-  }
-};
 
 const main = () => {
   let version = process.argv[2];
@@ -68,7 +44,7 @@ const main = () => {
   }
 
   updateJsonFile(workspaceServerPackageJsonPath, version);
-  updateTsFile(workspaceServerIndexPath, version);
+
 };
 
 main();

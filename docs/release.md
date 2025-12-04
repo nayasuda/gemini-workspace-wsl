@@ -9,12 +9,25 @@ This project uses GitHub Actions to automate the release process.
 
 ## Creating a Release
 
-To create a new release, use the `gh release create` command. This will trigger the GitHub Actions workflow to build the extension and attach the artifacts to the release.
+To streamline the release process:
 
-```bash
-# Syntax: gh release create <tag> --generate-notes
-gh release create v1.0.0 --generate-notes
-```
+1.  **Update Version**: Run the `set-version` script to update the version in `package.json` files. The `workspace-server` will now dynamically read its version from its `package.json`.
+    ```bash
+    npm run set-version <new-version> #0.0.x for example
+    ```
+
+2.  **Commit Changes**: Commit the version bump and push the changes to `main` (either directly or via a PR).
+    ```bash
+    git commit -am "chore: bump version to <new-version>"
+    git push origin main
+    ```
+
+3.  **Create Release**: Use the `gh release create` command. This will trigger the GitHub Actions workflow to build the extension and attach the artifacts to the release.
+
+    ```bash
+    # Syntax: gh release create <tag> --generate-notes
+    gh release create v<new-version> --generate-notes
+    ```
 
 ### What happens next?
 

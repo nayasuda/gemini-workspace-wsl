@@ -48,6 +48,9 @@ const SCOPES = [
     'https://www.googleapis.com/auth/spreadsheets.readonly',
 ];
 
+// Dynamically import version from package.json
+import { version } from '../package.json';
+
 async function main() {
     // 1. Initialize services
     if (process.argv.includes('--debug')) {
@@ -71,7 +74,7 @@ async function main() {
     // 2. Create the server instance
     const server = new McpServer({
         name: "google-workspace-server",
-        version: "0.0.3",
+        version,
     });
 
     // 3. Register tools directly on the server
