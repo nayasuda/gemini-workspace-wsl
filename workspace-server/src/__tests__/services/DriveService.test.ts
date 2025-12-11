@@ -12,6 +12,36 @@ import { google } from 'googleapis';
 // Mock the googleapis module
 jest.mock('googleapis');
 jest.mock('../../utils/logger');
+jest.mock('node:fs', () => {
+  const actualFs = jest.requireActual('node:fs') as any;
+  return {
+    ...actualFs,
+    promises: {
+      ...actualFs.promises,
+      mkdir: jest.fn(),
+      writeFile: jest.fn(),
+    },
+    existsSync: jest.fn(),
+    writeFileSync: jest.fn(),
+    mkdirSync: jest.fn(),
+  };
+});
+jest.mock('node:path', () => {
+  const actualPath = jest.requireActual('node:path') as any;
+  return {
+    ...actualPath,
+    resolve: jest.fn((...args: string[]) => args.join('/')),
+    dirname: jest.fn((p: string) => p.substring(0, p.lastIndexOf('/'))),
+    isAbsolute: jest.fn((p: string) => p.startsWith('/')),
+  };
+});
+jest.mock('../../utils/paths', () => ({
+  PROJECT_ROOT: '/mock/project/root',
+  ENCRYPTED_TOKEN_PATH: '/mock/project/root/token.json',
+  ENCRYPTION_MASTER_KEY_PATH: '/mock/project/root/key',
+}));
+
+import * as fs from 'node:fs';
 
 describe('DriveService', () => {
   let driveService: DriveService;
@@ -639,5 +669,64 @@ describe('DriveService', () => {
 
         });
 
+  });
+
+  describe('downloadFile', () => {
+    it('should download files and save locally', async () => {
+      const mockFileId = 'text-file-id';
+      const mockContent = 'Hello, World!';
+      const mockBuffer = Buffer.from(mockContent);
+      const mockLocalPath = 'downloads/test.txt';
+
+      mockDriveAPI.files.get.mockImplementation((params: any) => {
+        if (params.alt === 'media') {
+            return Promise.resolve({
+                data: mockBuffer,
+            });
+        }
+        return Promise.resolve({
+            data: { id: mockFileId, name: 'test.txt', mimeType: 'text/plain' },
+        });
       });
+
+      const result = await driveService.downloadFile({ fileId: mockFileId, localPath: mockLocalPath });
+
+      expect(mockDriveAPI.files.get).toHaveBeenCalledWith({
+        fileId: mockFileId,
+        fields: 'id, name, mimeType',
+      });
+
+      expect(mockDriveAPI.files.get).toHaveBeenCalledWith(
+        { fileId: mockFileId, alt: 'media' },
+        { responseType: 'arraybuffer' }
+      );
+
+      expect(fs.promises.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining(mockLocalPath),
+        mockBuffer
+      );
+      expect(result.content[0].text).toContain(`Successfully downloaded file test.txt`);
+    });
+
+    it('should suggest specialized tools for workspace types', async () => {
+      const mockFileId = 'doc-id';
+      mockDriveAPI.files.get.mockResolvedValue({
+        data: { mimeType: 'application/vnd.google-apps.document' },
+      });
+
+      const result = await driveService.downloadFile({ fileId: mockFileId, localPath: 'any' });
+
+      expect(result.content[0].text).toContain("This is a Google Doc. Direct download is not supported. Please use the 'docs.getText' tool with documentId: doc-id");
+      expect(mockDriveAPI.files.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle API errors', async () => {
+      const mockFileId = 'error-file-id';
+      mockDriveAPI.files.get.mockRejectedValue(new Error('API Error'));
+
+      const result = await driveService.downloadFile({ fileId: mockFileId, localPath: 'any' });
+
+      expect(JSON.parse(result.content[0].text)).toEqual({ error: 'API Error' });
+    });
+  });
 });

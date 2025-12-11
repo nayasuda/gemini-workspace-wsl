@@ -334,6 +334,18 @@ async function main() {
     );
 
     server.registerTool(
+        "drive.downloadFile",
+        {
+            description: 'Downloads the content of a file from Google Drive to a local path. Note: Google Docs, Sheets, and Slides require specialized handling.',
+            inputSchema: {
+                fileId: z.string().describe('The ID of the file to download.'),
+                localPath: z.string().describe('The local file path where the content should be saved (e.g., "downloads/report.pdf").'),
+            }
+        },
+        driveService.downloadFile
+    );
+
+    server.registerTool(
         "calendar.list",
         {
             description: 'Lists all of the user\'s calendars.',
