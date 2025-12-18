@@ -498,6 +498,7 @@ async function main() {
             description: 'Gets messages from a Google Chat space.',
             inputSchema: {
                 spaceName: z.string().describe('The name of the space to get messages from (e.g., spaces/AAAAN2J52O8).'),
+                threadName: z.string().optional().describe('The resource name of the thread to filter messages by. Example: "spaces/AAAAVJcnwPE/threads/IAf4cnLqYfg"'),
                 unreadOnly: z.boolean().optional().describe('Whether to return only unread messages.'),
                 pageSize: z.number().optional().describe('The maximum number of messages to return.'),
                 pageToken: z.string().optional().describe('The token for the next page of results.'),

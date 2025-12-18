@@ -381,6 +381,86 @@ describe('ChatService', () => {
       const response = JSON.parse(result.content[0].text);
       expect(response.messages).toEqual(mockMessages);
     });
+
+    it('should filter messages by threadName', async () => {
+      const mockMessages = [
+        { name: 'spaces/space1/messages/msg1', text: 'Hello' },
+      ];
+
+      mockChatAPI.spaces.messages.list.mockResolvedValue({
+        data: {
+          messages: mockMessages,
+        },
+      });
+
+      const threadName = 'spaces/space1/threads/thread1';
+      await chatService.getMessages({
+        spaceName: 'spaces/space1',
+        threadName,
+      });
+
+      expect(mockChatAPI.spaces.messages.list).toHaveBeenCalledWith({
+        parent: 'spaces/space1',
+        filter: `thread.name = "${threadName}"`,
+        pageSize: undefined,
+        pageToken: undefined,
+        orderBy: undefined,
+      });
+    });
+
+    it('should combine threadName and unreadOnly filters', async () => {
+      const mockPerson = {
+        data: {
+          metadata: {
+            sources: [
+              { type: 'PROFILE', id: 'user123' },
+            ],
+          },
+        },
+      };
+
+      const mockMembers = [
+        {
+          member: { name: 'users/user123' },
+          lastReadTime: '2024-01-01T00:00:00Z',
+        },
+      ];
+
+      const mockMessages = [
+        { name: 'spaces/space1/messages/msg1', text: 'Unread message in thread' },
+      ];
+
+      mockPeopleAPI.people.get.mockResolvedValue(mockPerson);
+      mockChatAPI.spaces.members.list.mockResolvedValue({
+        data: {
+          memberships: mockMembers,
+        },
+      });
+      mockChatAPI.spaces.messages.list.mockResolvedValue({
+        data: {
+          messages: mockMessages,
+        },
+      });
+
+      const threadName = 'spaces/space1/threads/thread1';
+      await chatService.getMessages({
+        spaceName: 'spaces/space1',
+        threadName,
+        unreadOnly: true,
+      });
+
+      expect(mockPeopleAPI.people.get).toHaveBeenCalledWith({
+        resourceName: 'people/me',
+        personFields: 'metadata',
+      });
+      expect(mockChatAPI.spaces.messages.list).toHaveBeenCalledWith({
+        parent: 'spaces/space1',
+        filter: `thread.name = "${threadName}" AND createTime > "2024-01-01T00:00:00Z"`,
+        pageSize: undefined,
+        pageToken: undefined,
+        orderBy: undefined,
+      });
+    });
   });
 
   describe('sendDm', () => {
