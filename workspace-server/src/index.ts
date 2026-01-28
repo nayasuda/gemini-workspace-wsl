@@ -78,12 +78,15 @@ async function main() {
     });
 
     // 3. Register tools directly on the server
-    // Wrap registerTool to normalise tool names (dots to underscores) for Cursor compatibility
+    // Handle tool name normalization (dots to underscores) by default, or use dots if --use-dot-names is passed.
+    const useDotNames = process.argv.includes('--use-dot-names');
+    const separator = useDotNames ? '.' : '_';
+    
     const originalRegisterTool = server.registerTool;
-    server.registerTool = function(...args: Parameters<typeof originalRegisterTool>) {
+    (server as any).registerTool = function(...args: any[]) {
         const [name, ...rest] = args;
-        const normalizedName = name.replace(/\./g, '_');
-        return originalRegisterTool.apply(server, [normalizedName, ...rest]);
+        const normalizedName = name.replace(/\./g, separator);
+        return (originalRegisterTool as any).apply(server, [normalizedName, ...rest]);
     };
 
     server.registerTool(
@@ -747,7 +750,7 @@ There are a list of system labels that can be modified on a message:
     const transport = new StdioServerTransport();
     await server.connect(transport);
     
-    console.error("Google Workspace MCP Server is running (registerTool). Listening for requests...");
+    console.error(`Google Workspace MCP Server is running (using ${separator} for tool names). Listening for requests...`);
 }
 
 main().catch(error => {

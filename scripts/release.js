@@ -93,7 +93,7 @@ const main = async () => {
     mcpServers: {
       'google-workspace': {
         command: 'node',
-        args: ['dist/index.js'],
+        args: ['dist/index.js', '--use-dot-names'],
         cwd: '${extensionPath}',
       },
     },
