@@ -52,8 +52,6 @@ const SCOPES = [
 // Dynamically import version from package.json
 import { version } from '../package.json';
 
-import { applyToolNameNormalization } from './utils/tool-normalization';
-
 async function main() {
     // 1. Initialize services
     if (process.argv.includes('--debug')) {
