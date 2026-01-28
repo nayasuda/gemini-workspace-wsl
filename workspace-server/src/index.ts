@@ -23,6 +23,7 @@ import { GMAIL_SEARCH_MAX_RESULTS } from "./utils/constants";
 import { extractDocId } from "./utils/IdUtils";
 
 import { setLoggingEnabled } from "./utils/logger";
+import { applyToolNameNormalization } from "./utils/tool-normalization";
 
 // Shared schemas for Gmail tools
 const emailComposeSchema = {
@@ -50,6 +51,8 @@ const SCOPES = [
 
 // Dynamically import version from package.json
 import { version } from '../package.json';
+
+import { applyToolNameNormalization } from './utils/tool-normalization';
 
 async function main() {
     // 1. Initialize services
@@ -81,13 +84,7 @@ async function main() {
     // Handle tool name normalization (dots to underscores) by default, or use dots if --use-dot-names is passed.
     const useDotNames = process.argv.includes('--use-dot-names');
     const separator = useDotNames ? '.' : '_';
-    
-    const originalRegisterTool = server.registerTool;
-    (server as any).registerTool = function(...args: any[]) {
-        const [name, ...rest] = args;
-        const normalizedName = name.replace(/\./g, separator);
-        return (originalRegisterTool as any).apply(server, [normalizedName, ...rest]);
-    };
+    applyToolNameNormalization(server, useDotNames);
 
     server.registerTool(
         "auth.clear",
