@@ -6,6 +6,7 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
+// Utility for normalizing tool names
 /**
  * Wraps the McpServer.registerTool method to normalize tool names.
  * If useDotNames is true, dots in tool names are preserved.
