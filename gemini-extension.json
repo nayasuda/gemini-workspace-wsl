@@ -6,7 +6,7 @@
     "google-workspace": {
       "program": "./workspace-server/dist/index.js",
       "command": "node",
-      "args": ["scripts${/}start.js"],
+      "args": ["scripts${/}start.js", "--use-dot-names"],
       "cwd": "${extensionPath}"
     }
   }

@@ -47,7 +47,9 @@ async function main() {
       'dist',
       'index.js',
     );
-    await runCommand('node', [SERVER_PATH, '--debug'], { stdio: 'inherit' });
+    await runCommand('node', [SERVER_PATH, '--debug', '--use-dot-names'], {
+      stdio: 'inherit',
+    });
   } catch (error) {
     console.error(error);
     process.exit(1);

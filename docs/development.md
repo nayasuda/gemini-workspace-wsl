@@ -66,6 +66,7 @@ argument. For example:
 
 ````bash
 npm run test -- workspace-server/src/__tests__/GmailService.test.ts
+```
 
 ### Linting and Style Checks
 
@@ -137,6 +138,12 @@ gemini --debug
   AI-assisted development, including conventions for comments, and Git usage.
 - **Imports:** Pay special attention to import paths. The project uses ESLint to
   enforce restrictions on relative imports between packages.
+
+### Tool Naming
+
+Tool names in source use dot notation (e.g., `docs.create`) for logical grouping. By default, these are normalized to underscores at runtime (e.g., `docs_create`) for compatibility with a broader set of applications that use MCP including Google Antigravity.
+
+When the server is run as a Gemini CLI extension the `--use-dot-names` flag is used to maintain dot notation and avoid breaking existing configurations.
 
 ### Project Structure
 
