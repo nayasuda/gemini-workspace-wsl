@@ -1,5 +1,9 @@
 # Google Workspace Extension for Gemini CLI
 
+[日本語版 / Japanese README](./README.ja.md)
+
+> This repository is an **unofficial fork** of [gemini-cli-extensions/workspace](https://github.com/gemini-cli-extensions/workspace), focused on improving usability in WSL environments.
+
 [![Build Status](https://github.com/gemini-cli-extensions/workspace/actions/workflows/ci.yml/badge.svg)](https://github.com/gemini-cli-extensions/workspace/actions/workflows/ci.yml)
 
 The Google Workspace extension for Gemini CLI brings the power of your Google
@@ -19,6 +23,10 @@ your terminal:
 ```bash
 gemini extensions install https://github.com/gemini-cli-extensions/workspace
 ```
+
+## Recommended for team usage
+
+For stability and reproducibility, use a **fixed release tag** (for example: `v0.0.5-wsl1`) instead of tracking `main`.
 
 ## Usage
 
@@ -113,3 +121,7 @@ file for details on how to contribute to this project.
 - **Terms of Service**: [Terms of Service](https://policies.google.com/terms)
 - **Privacy Policy**: [Privacy Policy](https://policies.google.com/privacy)
 - **Security**: [Security Policy](SECURITY.md)
+
+## Upstream
+
+Original repository: [gemini-cli-extensions/workspace](https://github.com/gemini-cli-extensions/workspace)
